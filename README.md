@@ -1,7 +1,7 @@
 # HOW TO USE : 
 1. From the command line, navigate to the location of the application.
 ```
-cd Downloads/Jamf_AnimalList/source
+cd Jamf_AnimalList/source
 ```
 2. Run the following command.
 ```
