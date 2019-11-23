@@ -22,3 +22,11 @@ java AnimalList
 + Fun colors
 + Pictures of each animal from Google Images
 + Perfected usability
+
+
+## TROUBLESHOOTING :
++ If you're having trouble running the program, try the following commands and follow the HOW TO USE instructions again.
+```
+cd Jamf_AnimalList
+javac AnimalList.java Animal.java
+```

@@ -10,16 +10,24 @@ public class AnimalList extends JFrame
     Animal[] an = null;
     int n_animals = 0;
     String[] names = null;
+    
+    JFrame frame = new JFrame();
+    
     JButton[] buttons = null;
+    JButton quit = null;
+    JButton back = null;
+    
     JPanel centerPanel = null;
+    JPanel topPanel = null;
     
     public AnimalList(){
         // GUI setup
         super("ACME");
-        setBounds(0,0,400,400);
+        setBounds(0,0,400,800);
         Font font=new Font("ARIAL",0,48);
     }
     
+    // get information from url
     public Animal[] retrieve(){
         Animal[] animals = null;
         
@@ -86,9 +94,9 @@ public class AnimalList extends JFrame
                 line = buffread.readLine();
                 //System.out.println(line);
             } catch(MalformedURLException mue){
-                System.out.println("you've got a bad URL!");
+                System.out.println("you've got a bad URL! This website may not be available anymore.");
             } catch(IOException ioe){
-                System.out.println("something went wrong in IO!");
+                System.out.println("The webpage is unavailable right now! Check your internet connection and try again.");
             }
             
             // 11 words in quotation marks per line. we'll pick and choose which we want
@@ -103,13 +111,8 @@ public class AnimalList extends JFrame
             animals[l-1].setHabitat(parsed_line[8]);
             animals[l-1].setFood(parsed_line[10]);
             n_animals++;
-            
-            System.out.println(animals[l-1].getHabitat());
         }
         
-        //animals[3] = new Animal();
-        //animals[3].setName("beep");
-        System.out.println("here : " + animals[1].getName());
         setupGUI(animals);
         
         an = animals;
@@ -153,14 +156,15 @@ public class AnimalList extends JFrame
                 i = n/2;
                 name = name + "" + s.charAt(j);
                 a[i] = name;
-                //System.out.println(i);
             }
         }
 
         return a;
     }
     
+    // main page
     public void setupGUI(Animal[] animals){
+        //update();
         buttons = new JButton[n_animals];
         
         JLabel label = null;
@@ -175,27 +179,37 @@ public class AnimalList extends JFrame
             centerPanel.add(buttons[m]);
             buttons[m].addActionListener(new ButtonHandler());
         }
-
+        
+        topPanel = new JPanel();
+        topPanel.setLayout(new BorderLayout());
+        Font quit_font=new Font("ARIAL",0,14);
+        quit = new JButton("Quit");
+        quit.addActionListener(new ButtonHandler());
+        quit.setFont(quit_font);
+        topPanel.add(quit, BorderLayout.EAST);
+        
+        add(topPanel, BorderLayout.NORTH);
         add(centerPanel, BorderLayout.CENTER);
+        
+        update();
     }
     
+    // details about an animal
     public void loadAnimalPage(int x){
-        centerPanel.removeAll();
-        centerPanel.revalidate();
-        centerPanel.repaint();
+        update();
+
+        centerPanel.setLayout(new GridLayout(n_animals, 2));
         
-        //centerPanel = new JPanel();
-        centerPanel.setLayout(new GridLayout(n_animals, 1));
-        
-        Font font=new Font("ARIAL",0,14);
-        
-        JButton back = new JButton("Back");
+        topPanel.setLayout(new BorderLayout());
+        Font font=new Font("ARIAL",0,14);        
+        back = new JButton("Back");
+        back.setFont(font);
+        quit.setFont(font);
         
         back.addActionListener(new ButtonHandler());
-        
-        back.setFont(font);
-        
-        add(back, BorderLayout.NORTH);
+        quit.addActionListener(new ButtonHandler());
+        topPanel.add(back, BorderLayout.WEST);
+        topPanel.add(quit, BorderLayout.EAST);
         
         JLabel lname = new JLabel("Name : ");
         JLabel aname = new JLabel(an[x].getName());
@@ -230,21 +244,61 @@ public class AnimalList extends JFrame
         centerPanel.add(lfood);
         centerPanel.add(afood);
         
+        add(topPanel, BorderLayout.NORTH);
         add(centerPanel, BorderLayout.CENTER);
         
-        centerPanel.revalidate();
-        centerPanel.repaint();
+        update();
+
     }
     
+    // which button does what?
     public class ButtonHandler implements ActionListener{
         public void actionPerformed(ActionEvent e){
-            for(int n = 0; n < names.length - 1; n++){
-                if(e.getSource() == buttons[n]){
-                    loadAnimalPage(n);
+            if(e.getSource() == back){
+                clear();
+                setupGUI(an);
+                update();
+                return;
+            }else if(e.getSource() == quit){
+                System.exit(0);
+                return;
+            }else {
+                for(int n = 0; n < names.length - 1; n++){
+                    if(e.getSource() == buttons[n]){
+                        clear();
+                        loadAnimalPage(n);
+                        update();
+                        return;
+                    }
                 }
             }
             
         }
+    }
+    
+    // clear frame
+    public void clear(){
+        topPanel.removeAll();
+        centerPanel.removeAll();       
+        
+        topPanel.revalidate();
+        centerPanel.revalidate();
+        
+        topPanel.repaint();
+        centerPanel.repaint();
+        
+        frame.setVisible(true);
+    }
+    
+    // update frame
+    public void update(){
+        topPanel.revalidate();
+        centerPanel.revalidate();
+        
+        topPanel.repaint();
+        centerPanel.repaint();
+        
+        frame.setVisible(true);
     }
     
     public static void main(String[] args){
